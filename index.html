@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="猜人名PK - 双人对战猜人名Web游戏，通过向AI提问是否问题来猜出隐藏的人物名字">
+  <meta name="theme-color" content="#0a0a1a">
+  <title>猜人名PK</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎭</text></svg>">
+</head>
+
+<body>
+
+  <!-- Background Particles -->
+  <div class="bg-particles" id="bg-particles"></div>
+
+  <!-- Celebration Container -->
+  <div class="celebration-container" id="celebration-container"></div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- App Container -->
+  <div class="app-container">
+
+    <!-- ===== Top Bar ===== -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button class="btn" id="btn-player-settings" title="玩家设置">👤 玩家设置</button>
+        <button class="btn" id="btn-settings" title="游戏设置">⚙️ 游戏设置</button>
+        <button class="btn" id="btn-restart" title="重新开始">🔄 重新开始</button>
+      </div>
+      <h1 class="game-title" id="game-title">🎭 猜人名PK</h1>
+      <div class="top-bar-right">
+        <button class="btn btn-icon mute-btn" id="btn-mute" title="静音切换">🔊</button>
+        <button class="btn btn-icon" id="btn-fullscreen" title="全屏显示">⛶</button>
+      </div>
+    </header>
+
+    <!-- ===== VS Section ===== -->
+    <section class="vs-section" id="vs-section">
+      <div class="category-badge" id="category-badge">🌍 不限人物</div>
+      <div class="vs-container">
+        <div class="player-header">
+          <div class="player-avatar player1 active" id="p1-avatar">🐱</div>
+          <div class="player-name player1" id="p1-name">甜大官</div>
+          <div class="player-status" id="p1-status">等待开始</div>
+        </div>
+        <div class="vs-text">VS</div>
+        <div class="player-header">
+          <div class="player-avatar player2 active" id="p2-avatar">🐶</div>
+          <div class="player-name player2" id="p2-name">万小布</div>
+          <div class="player-status" id="p2-status">等待开始</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Init Screen (No API Key) ===== -->
+    <div class="init-screen" id="init-screen" style="display: none;">
+      <div class="init-icon">🎭</div>
+      <div class="init-title">准备开始猜人名对战！</div>
+      <div class="init-desc">
+        请先在游戏设置中配置 AI 大模型的 API Key，<br>
+        然后就可以开始精彩的猜人名PK了！
+      </div>
+      <button class="btn btn-primary" id="init-btn-settings">⚙️ 打开游戏设置</button>
+    </div>
+
+    <!-- ===== Game Area ===== -->
+    <main class="game-area" id="game-area">
+
+      <!-- Player 1 Panel -->
+      <div class="player-panel player1" id="p1-panel">
+        <div class="panel-header">
+          <div class="panel-title">🎯 甜大官 的猜题区</div>
+          <div class="header-actions">
+            <button class="btn btn-sm btn-danger" id="p1-btn-hint" title="获取提示">💡 终极提示</button>
+            <button class="btn btn-sm btn-danger" id="p1-btn-give-up" title="放弃本局">🏳️ 放弃答题</button>
+            <div class="question-counter" id="p1-counter">0 / 12</div>
+          </div>
+        </div>
+
+        <div class="question-list" id="p1-questions">
+          <!-- JS 动态生成 -->
+        </div>
+
+        <div class="reveal-area" id="p1-reveal" style="display: none;"></div>
+
+        <!-- Tab & Input Area -->
+        <div class="tab-header">
+          <button class="tab-btn active" id="p1-tab-ask" data-p="1" data-type="ask">❓ 是否提问</button>
+          <button class="tab-btn" id="p1-tab-guess" data-p="1" data-type="guess">🎯 猜测结果</button>
+        </div>
+
+        <div class="input-area">
+          <div class="input-row">
+            <input class="input-field" id="p1-input" type="text" placeholder="输入你的问题..." maxlength="20"
+              autocomplete="off">
+          </div>
+          <div class="char-counter" id="p1-char-count">0/20</div>
+
+          <div class="action-buttons">
+            <button class="btn btn-primary" id="p1-btn-submit">确认提问</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player 2 Panel -->
+      <div class="player-panel player2" id="p2-panel">
+        <div class="panel-header">
+          <div class="panel-title">🎯 万小布 的猜题区</div>
+          <div class="header-actions">
+            <button class="btn btn-sm btn-danger" id="p2-btn-hint" title="获取提示">💡 终极提示</button>
+            <button class="btn btn-sm btn-danger" id="p2-btn-give-up" title="放弃本局">🏳️ 放弃答题</button>
+            <div class="question-counter" id="p2-counter">0 / 12</div>
+          </div>
+        </div>
+
+        <div class="question-list" id="p2-questions"></div>
+
+        <div class="reveal-area" id="p2-reveal" style="display: none;"></div>
+
+        <!-- Tab & Input Area -->
+        <div class="tab-header">
+          <button class="tab-btn active" id="p2-tab-ask" data-p="2" data-type="ask">❓ 是否提问</button>
+          <button class="tab-btn" id="p2-tab-guess" data-p="2" data-type="guess">🎯 猜测结果</button>
+        </div>
+
+        <div class="input-area">
+          <div class="input-row">
+            <input class="input-field" id="p2-input" type="text" placeholder="输入你的问题..." maxlength="20"
+              autocomplete="off">
+          </div>
+          <div class="char-counter" id="p2-char-count">0/20</div>
+
+          <div class="action-buttons">
+            <button class="btn btn-primary" id="p2-btn-submit">确认提问</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- ===== Player Modal ===== -->
+  <div class="modal-overlay" id="player-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">👤 玩家设置</h2>
+        <button class="modal-close" id="player-settings-close">✕</button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">👥 玩家信息</div>
+
+        <div class="settings-row">
+          <div class="settings-field">
+            <label class="settings-label" for="input-p1-name">玩家1 名字（最多4字）</label>
+            <input class="settings-input" id="input-p1-name" type="text" maxlength="4" placeholder="甜大官">
+          </div>
+          <div class="settings-field">
+            <label class="settings-label" for="input-p2-name">玩家2 名字（最多4字）</label>
+            <input class="settings-input" id="input-p2-name" type="text" maxlength="4" placeholder="万小布">
+          </div>
+        </div>
+
+        <div class="settings-field" style="margin-bottom: var(--space-md);">
+          <label class="settings-label">玩家1 头像</label>
+          <div class="avatar-picker" id="avatar-picker-1"></div>
+        </div>
+
+        <div class="settings-field">
+          <label class="settings-label">玩家2 头像</label>
+          <div class="avatar-picker" id="avatar-picker-2"></div>
+        </div>
+      </div>
+
+      <div class="settings-footer">
+        <button type="button" class="btn btn-primary" id="btn-save-player-settings">💾 保存并生效</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Game Settings Modal ===== -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">⚙️ 游戏规则</h2>
+        <button class="modal-close" id="settings-close">✕</button>
+      </div>
+
+      <form id="settings-form" onsubmit="return false;">
+
+        <!-- 游戏规则 -->
+        <div class="settings-section">
+          <div class="settings-section-title">🎮 规则配置</div>
+
+          <div class="settings-row">
+            <div class="settings-field">
+              <label class="settings-label" for="select-category">出题范围</label>
+              <select class="settings-select" id="select-category"></select>
+            </div>
+            <div class="settings-field">
+              <label class="settings-label" for="input-max-questions">最大提问次数（5~30）</label>
+              <input class="settings-input" id="input-max-questions" type="number" min="5" max="30" value="12">
+            </div>
+          </div>
+        </div>
+
+        <!-- AI 设置 -->
+        <div class="settings-section">
+          <div class="settings-section-title">🤖 AI 大模型设置</div>
+
+          <div class="settings-field" style="margin-bottom: var(--space-md);">
+            <label class="settings-label" for="select-ai-provider">AI 提供商</label>
+            <select class="settings-select" id="select-ai-provider"></select>
+          </div>
+
+          <div class="settings-field">
+            <label class="settings-label" for="input-api-key">API Key</label>
+            <div class="api-key-row">
+              <input class="settings-input" id="input-api-key" type="password" placeholder="请输入你的 API Key">
+              <button type="button" class="api-key-toggle" id="btn-toggle-key" title="显示/隐藏">👁️</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="settings-footer">
+          <button type="button" class="btn btn-danger btn-sm" id="btn-reset-defaults">🔄 恢复默认</button>
+          <button type="button" class="btn btn-primary" id="btn-save-settings">💾 保存设置</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Result Modal ===== -->
+  <div class="modal-overlay result-modal" id="result-modal">
+    <div class="modal">
+      <div class="result-icon" id="result-icon">🏆</div>
+      <div class="result-title win" id="result-title">游戏结束</div>
+      <div class="result-details" id="result-details"></div>
+      <div class="result-actions">
+        <button class="btn btn-primary" id="result-btn-restart">🔄 重新开始</button>
+        <button class="btn" id="result-btn-settings">⚙️ 游戏设置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Confirm Modal ===== -->
+  <div class="modal-overlay" id="confirm-modal">
+    <div class="modal confirm-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">⚠️ 确认</h2>
+        <div></div>
+      </div>
+      <div class="confirm-message" id="confirm-message">确定要执行此操作吗？</div>
+      <div class="confirm-actions">
+        <button class="btn" id="confirm-no">取消</button>
+        <button class="btn btn-primary" id="confirm-yes">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/sound.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/names-data.js"></script>
+  <script src="js/ai-service.js"></script>
+  <script src="js/game-engine.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>
