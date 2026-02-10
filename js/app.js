@@ -289,7 +289,7 @@ const App = (() => {
         Sound.click();
 
         const input = DOM[`p${playerNum}Input`];
-        input.value = ''; // 切换时清空输入
+        // input.value = ''; // 切换时保留输入
         input.focus();
 
         updateUI();
@@ -680,7 +680,7 @@ const App = (() => {
 
         Sound.closePanel();
         closePlayerSettings();
-        showToast('玩家信息已更新 ✅', 'success');
+        showToast('玩家信息已更新 ✅', 'system');
         updateUI();
     }
 
@@ -739,7 +739,7 @@ const App = (() => {
 
         Sound.closePanel();
         closeGameSettings();
-        showToast('游戏规则已更新 ✅', 'success');
+        showToast('游戏规则已更新 ✅', 'system');
         updateUI();
 
         // 总是重新开始
